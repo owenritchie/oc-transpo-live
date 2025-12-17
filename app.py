@@ -1,5 +1,5 @@
 import streamlit as st
-from config.sources import init_connection, get_active_transit_data, get_historical_transit_data
+from config.sources import get_active_transit_data, get_historical_transit_data
 from utils.metrics import calculate_metrics
 from components.header_callouts import render_header_callouts
 from components.header_timeseries_chart import render_header_timeseries_chart
@@ -8,8 +8,6 @@ from components.weekly_timeseries_trends import render_transit_details
 from components.active_vehicles_gauge import render_active_vehicles_gauge
 from components.daily_summary_table import render_daily_summary_table
 from components.slowest_travel_times import render_slowest_travel_times
-
-conn = init_connection()
 
 st.set_page_config(
     page_title="OC Transpo Active Transit",
@@ -42,8 +40,8 @@ else:
     st.title("OC Transpo Transit Report")
 
     try:
-        df_active = get_active_transit_data(conn)
-        df_historical = get_historical_transit_data(conn)
+        df_active = get_active_transit_data()
+        df_historical = get_historical_transit_data()
 
         metrics = calculate_metrics(df_historical)
 
