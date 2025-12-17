@@ -11,8 +11,9 @@ def get_connection():
     conn = init_connection()
     try:
         # Test if connection is alive
-        conn.isolation_level
-    except (psycopg2.OperationalError, psycopg2.InterfaceError):
+        with conn.cursor() as cur:
+            cur.execute("SELECT 1")
+    except Exception:
         # Connection is dead, clear cache and reconnect
         st.cache_resource.clear()
         conn = init_connection()
@@ -28,4 +29,10 @@ def get_active_transit_data():
 def get_historical_transit_data():
     conn = get_connection()
     query = "SELECT * FROM public.oc_historical_snapshots"
+    return pd.read_sql_query(query, conn)
+
+@st.cache_data(ttl=None)
+def get_route_list():
+    conn = get_connection()
+    query = "SELECT route_id, stop_lat, stop_lon FROM public.fct_active_vehicles"
     return pd.read_sql_query(query, conn)

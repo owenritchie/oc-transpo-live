@@ -27,10 +27,10 @@ if page == "About":
 
     ## Features
     Currently, I have created the following pages, which are accessible via tabs.
-    - ** ✅Live Map**: View current bus locations and speeds across the city
-    - ** ✅ Transit Details**: Analyze transit performance with metrics, trends, and historical data
-    - ** 🚧 Route Details**: Coming soon - Route-specific performance analysis
-    - ** 🚧 Forecasts**: Coming soon - Predictive analytics for transit patterns
+    -  ✅Live Map: View current bus locations and speeds across the city
+    -  ✅ Transit Details: Analyze transit performance with metrics, trends, and historical data
+    -  🚧 Route Details: Coming soon - Route-specific performance analysis
+    -  🚧 Forecasts: Coming soon - Predictive analytics for transit patterns
 
     ## Data Sources
     Data is collected from OC Transpo's real-time vehicle position feeds using Python, and stored in a Neon PostgreSQL database. The data is then transformed using dbt with a medallion architecture, and visualized in Streamlit. The end-to-end ELT process is completely automated using GitHub Actions. Real-time data refreshes occur every hour (due to free storage limits & CU-hrs constraints).
