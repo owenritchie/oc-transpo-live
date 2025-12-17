@@ -9,7 +9,7 @@ from components.active_vehicles_gauge import render_active_vehicles_gauge
 from components.daily_summary_table import render_daily_summary_table
 from components.slowest_travel_times import render_slowest_travel_times
 
-init_connection()
+conn = init_connection()
 
 st.set_page_config(
     page_title="OC Transpo Active Transit",
@@ -42,8 +42,8 @@ else:
     st.title("OC Transpo Transit Report")
 
     try:
-        df_active = get_active_transit_data()
-        df_historical = get_historical_transit_data()
+        df_active = get_active_transit_data(conn)
+        df_historical = get_historical_transit_data(conn)
 
         metrics = calculate_metrics(df_historical)
 
