@@ -30,7 +30,6 @@ if page == "About":
     Currently, I have created the following pages, which are accessible via tabs.
     -  ✅Live Map: View current bus locations and speeds across the city
     -  ✅ Transit Details: Analyze transit performance with metrics, trends, and historical data
-    -  🚧 Route Details: Coming soon - Route-specific performance analysis
     -  🚧 Forecasts: Coming soon - Predictive analytics for transit patterns
 
     ## Data Sources
