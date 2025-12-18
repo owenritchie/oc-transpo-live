@@ -13,7 +13,7 @@ def render_active_vehicles_gauge(df_active):
     fig = go.Figure(go.Indicator(
         mode="gauge",
         value=active_percentage,
-        title={'text': f"Current Active Vehicles: {active_vehicles} / {total_vehicles}<br>({active_percentage:.1f}%)", 'font': {'size': 18}},
+        title={'text': f"Current Moving Vehicles: {active_vehicles} / {total_vehicles}<br>({active_percentage:.1f}%)", 'font': {'size': 18}},
         gauge={
             'axis': {'range': [0, 100]},
             'bar': {'color': "#31d1e9"}

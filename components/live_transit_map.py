@@ -1,7 +1,7 @@
 import streamlit as st
 import plotly.graph_objects as go
 
-def render_live_transit_map(df_active):
+def render_live_transit_map(df_active, df_routes=None):
     """Render live vehicle locations on a map"""
 
     left_map, right_search = st.columns([4, 1])
@@ -17,11 +17,13 @@ def render_live_transit_map(df_active):
                 df_map['route_display'].unique(),
                 key=lambda x: (int(x) if x.isdigit() else float('inf'), x)
             )
-            selected_route = st.selectbox("Select Route", ['All Routes'] + unique_routes, index=0)
+            selected_route = st.selectbox("Select Route", ['All Routes'] + unique_routes, index=0, key="route_select")
             df_map_filtered = df_map if selected_route == 'All Routes' else df_map[df_map['route_display'] == selected_route]
 
             all_vehicles = ['All Vehicles'] + df_map_filtered['vehicle_id'].astype(str).tolist()
-            selected_vehicle = st.selectbox("Select Vehicle", all_vehicles, index=0)
+            selected_vehicle = st.selectbox("Select Vehicle", all_vehicles, index=0, key="vehicle_select")
+
+            show_stops = st.checkbox("Show Route Stops", value=False, key="show_route_stops")
 
             st.divider()
 
@@ -53,7 +55,10 @@ def render_live_transit_map(df_active):
                 center_lon = vehicle_data['longitude']
                 zoom_level = 15
 
-            fig_map = go.Figure(go.Scattermapbox(
+            fig_map = go.Figure()
+
+            # Add vehicle markers
+            fig_map.add_trace(go.Scattermapbox(
                 lat=df_display['latitude'],
                 lon=df_display['longitude'],
                 mode='markers',
@@ -67,8 +72,32 @@ def render_live_transit_map(df_active):
                     colorbar=dict(title="Speed<br>(km/h)")
                 ),
                 text=df_display.apply(lambda row: f"Vehicle: {row['vehicle_id']}<br>Speed: {row['speed']:.1f} km/h<br>Route: {row.get('route_id', 'N/A')}", axis=1),
-                hoverinfo='text'
+                hoverinfo='text',
+                name='Vehicles'
             ))
+
+            # Add route stops
+            if show_stops and df_routes is not None and len(df_routes) > 0:
+                # Filter route stops based on selected route
+                if selected_route != 'All Routes':
+                    df_stops = df_routes[df_routes['route_id'] == selected_route]
+                else:
+                    df_stops = df_routes
+
+                if len(df_stops) > 0:
+                    fig_map.add_trace(go.Scattermapbox(
+                        lat=df_stops['stop_lat'],
+                        lon=df_stops['stop_lon'],
+                        mode='markers',
+                        marker=dict(
+                            size=6,
+                            color='rgba(255, 255, 255, 0.7)',
+                            symbol='circle'
+                        ),
+                        text=df_stops.apply(lambda row: f"Stop: {row['stop_name']}<br>Stop ID: {row['stop_id']}<br>Route: {row['route_id']}", axis=1),
+                        hoverinfo='text',
+                        name='Stops'
+                    ))
 
             fig_map.update_layout(
                 mapbox_style="carto-darkmatter",

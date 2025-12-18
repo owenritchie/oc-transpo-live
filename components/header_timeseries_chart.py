@@ -3,10 +3,14 @@ from datetime import timedelta
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 
-def render_header_timeseries_chart(df_historical):
+def render_header_timeseries_chart(df_historical,df_weather):
     """Render a 48-hour transit trends timseries"""
 
-    st.subheader("48 Hour Transit Trends")
+    col_title, col_checkbox = st.columns([4, 1])
+    with col_title:
+        st.subheader("48 Hour Transit Trends")
+    with col_checkbox:
+        show_weather = st.checkbox("Show Weather", value=False, key="weather_toggle")
 
     cutoff = df_historical['snapshot_timestamp'].max() - timedelta(days=3)
     chart_data = (
@@ -22,6 +26,10 @@ def render_header_timeseries_chart(df_historical):
         'average_moving_speed': 'Moving Speed (km/h)'
     })
 
+    # prep weather data
+    weather_data = df_weather[df_weather['snapshot_timestamp'] >= cutoff].copy()
+    weather_data = weather_data.sort_values('snapshot_timestamp')
+
     fig = make_subplots(specs=[[{"secondary_y": True}]])
 
     fig.add_trace(
@@ -35,6 +43,22 @@ def render_header_timeseries_chart(df_historical):
                   name='% of Active Vehicles Moving', mode='lines', line=dict(color="#a724f9", width=2)),
         secondary_y=True,
     )
+
+
+    if show_weather:
+        for i in range(len(weather_data) - 1):
+            start_time = weather_data['snapshot_timestamp'].iloc[i]
+            end_time = weather_data['snapshot_timestamp'].iloc[i + 1]
+            precipitation = weather_data['precipitation_mm'].iloc[i]
+
+            if precipitation > 0:
+                fig.add_vrect(
+                    x0=start_time, x1=end_time,
+                    fillcolor="LightBlue", opacity=0.3,
+                    layer="below", line_width=0,
+                    annotation_text= weather_data['weather_description'].iloc[i] + f", {weather_data['temperature_celsius'].iloc[i]}°C"+ f", {precipitation} mm",
+                    annotation_position="top left"
+                )
 
     fig.update_layout(
         hovermode='x unified',

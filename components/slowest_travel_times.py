@@ -20,7 +20,7 @@ def render_slowest_travel_times(df_historical):
     slowest_times['Time'] = slowest_times['Time'].dt.strftime('%Y-%m-%d %H:%M')
 
     st.dataframe(
-        slowest_times.style.background_gradient(cmap='Reds_r', axis=0, subset=['Avg Moving Speed (km/h)'], low=0.05, high=0.3),
+        slowest_times.style.background_gradient(cmap='Reds_r', axis=0, subset=['Avg Moving Speed (km/h)'], low=0.05, high=0.3).format({'Avg Moving Speed (km/h)': '{:.1f}'}),
         use_container_width=True,
         hide_index=True
     )

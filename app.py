@@ -1,5 +1,5 @@
 import streamlit as st
-from config.sources import get_active_transit_data, get_historical_transit_data
+from config.sources import get_active_transit_data, get_historical_transit_data, get_historical_weather_data, get_route_stops_data
 from utils.metrics import calculate_metrics
 from components.header_callouts import render_header_callouts
 from components.header_timeseries_chart import render_header_timeseries_chart
@@ -8,6 +8,7 @@ from components.weekly_timeseries_trends import render_transit_details
 from components.active_vehicles_gauge import render_active_vehicles_gauge
 from components.daily_summary_table import render_daily_summary_table
 from components.slowest_travel_times import render_slowest_travel_times
+
 
 st.set_page_config(
     page_title="OC Transpo Active Transit",
@@ -37,11 +38,13 @@ if page == "About":
     """)
 
 else:
-    st.title("OC Transpo Transit Report")
+    st.title("OC Transpo Active Transit Report")
 
     try:
         df_active = get_active_transit_data()
         df_historical = get_historical_transit_data()
+        df_weather = get_historical_weather_data()
+        df_stops = get_route_stops_data()
 
         metrics = calculate_metrics(df_historical)
 
@@ -51,7 +54,7 @@ else:
             render_header_callouts(metrics)
 
         with right_timeseries:
-            render_header_timeseries_chart(df_historical)
+            render_header_timeseries_chart(df_historical,df_weather)
 
         st.divider()
 
@@ -60,7 +63,7 @@ else:
         ])
 
         with tab_live_map:
-            render_live_transit_map(df_active)
+            render_live_transit_map(df_active, df_stops)
 
         with tab_transit_details:
             col1, col2 = st.columns(2)

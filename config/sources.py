@@ -30,9 +30,21 @@ def get_historical_transit_data():
     conn = get_connection()
     query = "SELECT * FROM public.oc_historical_snapshots"
     return pd.read_sql_query(query, conn)
-
+'''
 @st.cache_data(ttl=None)
 def get_route_list():
     conn = get_connection()
     query = "SELECT route_id, stop_lat, stop_lon FROM public.fct_active_vehicles"
+    return pd.read_sql_query(query, conn)
+'''
+@st.cache_data(ttl=600)
+def get_historical_weather_data():
+    conn = get_connection()
+    query = "SELECT * FROM public.fct_current_weather"
+    return pd.read_sql_query(query, conn)
+
+@st.cache_data(ttl=None)
+def get_route_stops_data():
+    conn = get_connection()
+    query = "SELECT stop_id, stop_name, stop_sequence, route_id, stop_code, stop_lat, stop_lon FROM public.dim_stops"
     return pd.read_sql_query(query, conn)
