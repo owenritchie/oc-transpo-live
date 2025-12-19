@@ -46,19 +46,48 @@ def render_header_timeseries_chart(df_historical,df_weather):
 
 
     if show_weather:
+        # color mapping for weather conditions
+        weather_colors = {
+            'Clear sky': 'rgba(255, 255, 150, 0.3)',
+            'Partly cloudy': 'rgba(200, 200, 200, 0.3)',
+            'Fog': 'rgba(150, 150, 150, 0.4)',
+            'Drizzle': 'rgba(173, 216, 230, 0.3)',
+            'Rain': 'rgba(100, 149, 237, 0.4)',
+            'Freezing Rain': 'rgba(147, 112, 219, 0.4)',
+            'Snow': 'rgba(240, 248, 255, 0.5)',
+            'Thunderstorm': 'rgba(75, 0, 130, 0.4)'
+        }
+
+        added_to_legend = set()
+
         for i in range(len(weather_data) - 1):
             start_time = weather_data['snapshot_timestamp'].iloc[i]
             end_time = weather_data['snapshot_timestamp'].iloc[i + 1]
             precipitation = weather_data['precipitation_mm'].iloc[i]
+            weather_desc = weather_data['weather_description'].iloc[i]
 
             if precipitation > 0:
+                color = weather_colors.get(weather_desc, 'rgba(173, 216, 230, 0.3)')
+                show_in_legend = weather_desc not in added_to_legend
+
                 fig.add_vrect(
                     x0=start_time, x1=end_time,
-                    fillcolor="LightBlue", opacity=0.3,
-                    layer="below", line_width=0,
-                    annotation_text= weather_data['weather_description'].iloc[i] + f", {weather_data['temperature_celsius'].iloc[i]}°C"+ f", {precipitation} mm",
-                    annotation_position="top left"
+                    fillcolor=color,
+                    layer="below", line_width=0
                 )
+
+                if show_in_legend:
+                    fig.add_trace(
+                        go.Scatter(
+                            x=[None], y=[None],
+                            mode='markers',
+                            marker=dict(size=10, color=color, symbol='square'),
+                            name=weather_desc,
+                            showlegend=True
+                        ),
+                        secondary_y=False
+                    )
+                    added_to_legend.add(weather_desc)
 
     fig.update_layout(
         hovermode='x unified',

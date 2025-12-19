@@ -9,22 +9,22 @@ def render_daily_summary_table(df_historical):
 
     cutoff = df_historical['snapshot_timestamp'].max() - timedelta(days=7)
 
+    df_calc = df_historical[df_historical['snapshot_timestamp'] >= cutoff].copy()
+    df_calc['stopped_pct'] = (df_calc['stopped_vehicles'] / df_calc['active_buses']) * 100
+    df_calc['fast_pct'] = (df_calc['fast_vehicles'] / df_calc['active_buses']) * 100
+
     daily_summary = (
-        df_historical[df_historical['snapshot_timestamp'] >= cutoff]
+        df_calc
         .set_index('snapshot_timestamp')
         .resample('D')
         .agg({
             'active_buses': agg_type,
             'average_moving_speed': agg_type,
-            'stopped_vehicles': agg_type,
-            'fast_vehicles': agg_type
+            'stopped_pct': agg_type,
+            'fast_pct': agg_type
         })
         .sort_index(ascending=False)
     )
-
-    # calculate percentages
-    daily_summary['stopped_pct'] = (daily_summary['stopped_vehicles'] / daily_summary['active_buses']) * 100
-    daily_summary['fast_pct'] = (daily_summary['fast_vehicles'] / daily_summary['active_buses']) * 100
 
     # rename columns
     daily_summary = daily_summary[['active_buses', 'average_moving_speed', 'stopped_pct', 'fast_pct']].rename(columns={
