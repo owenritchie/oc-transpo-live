@@ -57,8 +57,8 @@ else:
 
         st.divider()
 
-        tab_live_map, tab_transit_details, tab_route_details, tab_forecasts = st.tabs([
-            "Live Map", "Transit Details", "Route Details", "Forecasts"
+        tab_live_map, tab_transit_details, tab_forecasts = st.tabs([
+            "Live Map", "Transit Details", "Forecasts"
         ])
 
         with tab_live_map:
@@ -74,9 +74,6 @@ else:
             render_transit_details(df_historical)
             st.divider()
             render_daily_summary_table(df_historical)
-
-        with tab_route_details:
-            st.info("Coming Soon - Route-specific mapping and comparisons")
 
         with tab_forecasts:
             st.info("Coming Soon - Predictive forecasts including traffic speed volume forecasting, taking into account time, weather etc.")

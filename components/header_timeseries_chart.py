@@ -8,7 +8,7 @@ def render_header_timeseries_chart(df_historical,df_weather):
 
     col_title, col_checkbox = st.columns([4, 1])
     with col_title:
-        st.subheader("48 Hour Transit Trends")
+        st.subheader("72 Hour Transit Trends")
     with col_checkbox:
         show_weather = st.checkbox("Show Weather", value=False, key="weather_toggle")
 
